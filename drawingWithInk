@@ -9,20 +9,31 @@ float[] maxLife = new float[num];
 PImage backgroundImage;
 int iter = 0;
 color c;
+color prevc;
 int toAdd = 0;
 float[] maxSize2 = new float[num];
 float[] startLocation2 = new float[num];
 PVector[] inkArray2 = new PVector[num];
 float[] life2 = new float[num];
 float[] maxLife2 = new float[num];
+float[] noize = new float[num];
+float[] noize2 = new float[num];
+int nindex = 10;
 
 void setup() {
   size(1590, 1060);
   background(255);
   frameRate(60);
   backgroundImage = loadImage("river.jpg");
+  blendMode(BLEND);
+  background(0);
+  
+  //for(int i = 0; i < 300; i++)
+  //{
+    
+  //}
 }
-
+//
 void updateKill(int index){
   //Use linked list if speed becomes an issue
   for(int i = index; i < iter - 1;i++)
@@ -32,6 +43,7 @@ void updateKill(int index){
     startLocation[i] = startLocation[i+1];
     life[i] = life[i+1];
     maxLife[i] = maxLife[i+1];
+    noize[i] = noize[i+1];
   }
   iter = iter - 1;
 }
@@ -42,6 +54,7 @@ void updateAdd(){
     startLocation[iter + i] = startLocation2[i];
     maxLife[iter + i] = maxLife2[i];
     life[iter + i] = life2[i];
+    noize[iter + i] = noize2[i];
   }
   iter = iter + toAdd;
   toAdd = 0;
@@ -56,10 +69,11 @@ void draw() {
   for(int i=0; i<iter; i++) {
     prevPos.x = inkArray[i].x;
     prevPos.y = inkArray[i].y;
-    inkArray[i].x += random(-0.5, 0.5);
-    inkArray[i].y += random(3);
-    w = map(life[i], 0, maxLife[i], 8,0);
-    a = map(inkArray[i].y, maxSize[i], startLocation[i], 0, 30);
+    prevc = backgroundImage.get((int)inkArray[i].x,(int)inkArray[i].y);
+    inkArray[i].x += noise(noize[i])*10 - 5;
+    inkArray[i].y += noise(noize[i] * 2)*10 - 5;
+    w = map(life[i], 0, maxLife[i], 10,2);
+    a = map(life[i], maxLife[i], 0, 0, 200);
     c = backgroundImage.get((int)inkArray[i].x,(int)inkArray[i].y);
     strokeWeight(abs(w));
     stroke(c, a);
@@ -76,7 +90,8 @@ void mouseDragged(){
   inkArray2[toAdd] = new PVector(mouseX, mouseY);
   maxSize2[toAdd] = random(1000);
   startLocation2[toAdd] = mouseY;
-  maxLife2[toAdd] = random(10,200);
+  maxLife2[toAdd] = random(10,800);
   life2[toAdd] = 0;
+  noize2[toAdd] = random(0,100);
   toAdd++;
 }
