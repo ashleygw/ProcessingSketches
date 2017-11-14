@@ -1,5 +1,5 @@
 int num = 10000;
-float test, w, a;
+float w, a;
 PVector prevPos = new PVector(0,0);
 PVector[] inkArray = new PVector[num];
 float[] maxSize = new float[num];
@@ -8,8 +8,7 @@ float[] life = new float[num];
 float[] maxLife = new float[num];
 PImage backgroundImage;
 int iter = 0;
-int toKill = 0;
-
+color c;
 int toAdd = 0;
 float[] maxSize2 = new float[num];
 float[] startLocation2 = new float[num];
@@ -18,22 +17,23 @@ float[] life2 = new float[num];
 float[] maxLife2 = new float[num];
 
 void setup() {
-  size(1900, 1000);
+  size(1590, 1060);
   background(255);
+  frameRate(60);
+  backgroundImage = loadImage("river.jpg");
 }
 
-void updateKill(){
-  //Shift array oh no.
-  for(int i = 0; i < iter;i++)
+void updateKill(int index){
+  //Use linked list if speed becomes an issue
+  for(int i = index; i < iter - 1;i++)
   {
-    inkArray[i] = inkArray[i+toKill];
-    maxSize[i] = maxSize[i+toKill];
-    startLocation[i] = startLocation[i+toKill];
-    life[i] = life[i+toKill];
-    maxLife[i] = maxLife[i+toKill];
+    inkArray[i] = inkArray[i+1];
+    maxSize[i] = maxSize[i+1];
+    startLocation[i] = startLocation[i+1];
+    life[i] = life[i+1];
+    maxLife[i] = maxLife[i+1];
   }
-  iter = iter - toKill;
-  toKill = 0;
+  iter = iter - 1;
 }
 void updateAdd(){
   for(int i = 0;i < toAdd;i++){
@@ -52,25 +52,23 @@ void draw() {
   //textSize(32);
   //text(iter, 10, 30); 
   updateAdd();
-  updateKill();
-
+  
   for(int i=0; i<iter; i++) {
     prevPos.x = inkArray[i].x;
     prevPos.y = inkArray[i].y;
     inkArray[i].x += random(-0.5, 0.5);
     inkArray[i].y += random(3);
-    w = map(life[i], 0, maxLife[i], 3,8);
-    a = map(inkArray[i].y, maxSize[i], startLocation[i], 0, 255);
-    if(w < 0){
-     println(w); 
-    }
+    w = map(life[i], 0, maxLife[i], 8,0);
+    a = map(inkArray[i].y, maxSize[i], startLocation[i], 0, 30);
+    c = backgroundImage.get((int)inkArray[i].x,(int)inkArray[i].y);
     strokeWeight(abs(w));
-    stroke(0, a);
+    stroke(c, a);
     if (life[i] < maxLife[i]) {
       life[i]++;
       line(prevPos.x, prevPos.y, inkArray[i].x, inkArray[i].y);
     } else {
-      toKill++;
+      updateKill(i);
+      i--;
     }
   }
 }
@@ -78,7 +76,7 @@ void mouseDragged(){
   inkArray2[toAdd] = new PVector(mouseX, mouseY);
   maxSize2[toAdd] = random(1000);
   startLocation2[toAdd] = mouseY;
-  maxLife2[toAdd] = random(10,2000);
+  maxLife2[toAdd] = random(10,200);
   life2[toAdd] = 0;
   toAdd++;
 }
