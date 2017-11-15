@@ -21,11 +21,11 @@ float[] noize2 = new float[num];
 float nindex = 10;
 
 void setup() {
-  size(1590, 1060);
+  size(1900, 786);
   background(255);
   frameRate(60);
-  backgroundImage = loadImage("river.jpg");
-  blendMode(BLEND);
+  backgroundImage = loadImage("br.jpg");
+  //blendMode();
   background(0);
   
   //for(int i = 0; i < 300; i++)
@@ -72,11 +72,20 @@ void draw() {
     prevc = backgroundImage.get((int)inkArray[i].x,(int)inkArray[i].y);
     inkArray[i].x += noise(noize[i] + nindex)*10.0 - 5.0;
     inkArray[i].y += noise((noize[i] + nindex) + 5.0)*10.0 - 5.0;
-    w = map(life[i], 0, maxLife[i], 10,2);
-    a = map(life[i], maxLife[i], 0, 0, 200);
+    w = map(life[i], 0, maxLife[i], 10,0);
+    a = map(life[i], maxLife[i], 0, 0, 150);
     c = backgroundImage.get((int)inkArray[i].x,(int)inkArray[i].y);
+    if((red(c) + green(c) + blue(c)) > 120)
+    {
+     stroke(c, a); 
+    }
+    //else // kill
+    //{
+    //  //life[i] = 10000;
+    //  stroke(c,20);
+    //}
     strokeWeight(abs(w));
-    stroke(c, a);
+    
     if (life[i] < maxLife[i]) {
       life[i]++;
       line(prevPos.x, prevPos.y, inkArray[i].x, inkArray[i].y);
@@ -90,8 +99,16 @@ void mouseDragged(){
   inkArray2[toAdd] = new PVector(mouseX, mouseY);
   maxSize2[toAdd] = random(1000);
   startLocation2[toAdd] = mouseY;
-  maxLife2[toAdd] = random(10,800);
+  maxLife2[toAdd] = random(10,500);
   life2[toAdd] = 0;
   noize2[toAdd] = random(0,100);
   toAdd++;
+}
+
+void keyPressed()
+{
+ if(key == 's')
+ {
+  saveFrame("###.png"); 
+ }
 }
